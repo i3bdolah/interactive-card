@@ -6,15 +6,13 @@ import CardLogo from './assets/card-logo.svg'
 import iconComplete from './assets/icon-complete.svg'
 import './App.css'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 
 const ValidMsg = ({ msg }) => {
-  return <p className={`ml-1 text-red-500 text-xs `}>{msg}</p>
+  return <p className={`ml-1 text-red-500 text-xs over relative`}>{msg}</p>
 }
 
 const App = () => {
-  const formRef = useRef()
-
   const [form, setForm] = useState({
     name: '',
     card_num: '',
@@ -45,23 +43,31 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    if (form.name.length === 0) {
+    // Name
+    if (form.name.trim().length === 0) {
       return setInput({ ...input, name: false })
     }
 
-    if (form.card_num.length === 0 || isNaN(+form.card_num)) {
+    // Card Number
+    if (form.card_num.trim().length === 0 || isNaN(+form.card_num)) {
       return setInput({ ...input, card_num: false })
     }
 
-    if (form.exp_month.length !== 2 || isNaN(+form.exp_month)) {
+    // Expire M
+    if (
+      form.exp_month.trim().length !== 2 ||
+      isNaN(+form.exp_month) ||
+      form.exp_month.trim() > 12
+    ) {
       return setInput({ ...input, exp_month: false })
     }
 
-    if (form.exp_year.length !== 2 || isNaN(+form.exp_year)) {
+    // Expire Y
+    if (form.exp_year.trim().length !== 2 || isNaN(+form.exp_year)) {
       return setInput({ ...input, exp_year: false })
     }
-
-    if (form.cvc.length !== 3 || isNaN(+form.cvc)) {
+    // CVC
+    if (form.cvc.trim().length !== 3 || isNaN(+form.cvc)) {
       return setInput({ ...input, cvc: false })
     }
     setIsValid(!isValid)
@@ -73,27 +79,27 @@ const App = () => {
         {/* First Div  */}
         <div className="w-[60rem] h-[100vh]">
           <img className="h-full w-full" src={BgDesktop} />
-
-          <div>
-            <img
-              className="text-white text-[28px] absolute bottom-[620px] left-[340px] z-10"
-              src={CardLogo}
-            />
-            <h1 className=" text-white text-[28px] absolute bottom-[525px] left-[340px] z-10 tracking-[5px]">
-              {form.card_num.padEnd(16, 0)}
-            </h1>
-            <div>
-              <h1 className=" text-white text-[18px] absolute bottom-[470px] left-[340px] z-10 tracking-wider">
-                {form.name.length > 0
-                  ? form.name.toUpperCase()
-                  : 'JANE APPLESEED'}
+          <div className="">
+            <div id="1">
+              <img
+                className="text-white text-[28px] absolute bottom-[620px] left-[340px] z-10"
+                src={CardLogo}
+              />
+              <h1 className=" text-white text-[28px] absolute bottom-[525px] left-[340px] z-10 tracking-[5px]">
+                {form.card_num.padEnd(16, 0)}
               </h1>
-              <h1 className=" text-white text-[16px] absolute bottom-[470px] left-[660px] z-10 tracking-widest">
-                {form.exp_month.padEnd(2, '0')}/{form.exp_year.padEnd(2, '0')}
-              </h1>
+              <div>
+                <h1 className=" text-white text-[18px] absolute bottom-[470px] left-[340px] z-10 tracking-wider">
+                  {form.name.length > 0
+                    ? form.name.toUpperCase()
+                    : 'JANE APPLESEED'}
+                </h1>
+                <h1 className=" text-white text-[16px] absolute bottom-[470px] left-[660px] z-10 tracking-widest">
+                  {form.exp_month.padEnd(2, '0')}/{form.exp_year.padEnd(2, '0')}
+                </h1>
+              </div>
             </div>
           </div>
-
           <img
             className="relative bottom-[410px] left-[390px] z--10 shadow-2xl rounded-lg"
             src={CardBack}
@@ -139,7 +145,7 @@ const App = () => {
           </div>
         ) : (
           <div className="w-full flex flex-col justify-center items-center">
-            <form ref={formRef} onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className="flex flex-col m-4 mt-8 gap-3">
                 <label className="tracking-widest text-[14px]">
                   CARDHOLDER NAME
@@ -200,8 +206,7 @@ const App = () => {
                       onFocus={() => setInput({ ...input, exp_month: true })}
                       // value={form.exp_month}
                       // required
-                      // maxLength={2}
-                      // mi={23}
+                      maxLength={2}
                     />
                     <input
                       className={`p-2  w-[70px] h-[45px] rounded-lg    border-[2px] text-xl focus:outline-purple-900  ${
@@ -214,7 +219,7 @@ const App = () => {
                       onFocus={() => setInput({ ...input, exp_year: true })}
                       // value={form.exp_year}
                       // required
-                      // maxLength={2}
+                      maxLength={2}
                     />
                   </div>
                   {input.exp_year && input.exp_month ? (
@@ -237,7 +242,7 @@ const App = () => {
                       onFocus={() => setInput({ ...input, cvc: true })}
                       // value={form.cvc}
                       // required
-                      // maxLength={3}
+                      maxLength={3}
                     />
                     {input.cvc ? '' : <ValidMsg msg={"Can't be blank."} />}
                   </div>
